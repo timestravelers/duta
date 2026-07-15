@@ -32,25 +32,37 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
-        /* Custom Premium Styles */
         body { font-family: 'Inter', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .glass-dark { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-dark { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .text-gradient { background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-bg { background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.9)), url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80') center/cover no-repeat; }
+        .hero-bg { 
+            background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.9)), url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80') center/cover no-repeat fixed;
+        }
         
-        /* Scroll Progress Bar */
         #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: #f59e0b; z-index: 9999; width: 0%; transition: width 0.1s; }
         
-        /* Loading Screen */
         #loader { position: fixed; inset: 0; background: #020617; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .spinner { width: 50px; height: 50px; border: 3px solid rgba(245, 158, 11, 0.3); border-radius: 50%; border-top-color: #f59e0b; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        /* Marquee for Clients */
-        .marquee-container { overflow: hidden; white-space: nowrap; }
-        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        /* Responsive Utilities */
+        @media (max-width: 640px) {
+            .hero-title { font-size: 2rem; line-height: 2.5rem; }
+            .hero-desc { font-size: 0.875rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .cta-buttons { flex-direction: column; gap: 0.75rem; }
+            .cta-buttons .btn { width: 100%; text-align: center; }
+        }
+        
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .hero-title { font-size: 2.5rem; line-height: 3rem; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        }
+        
+        @media (min-width: 1025px) {
+            .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+        }
     </style>
 </head>
 <body class="bg-navy-900 text-gray-200 antialiased selection:bg-gold-500 selection:text-navy-900">
@@ -63,12 +75,12 @@
 
     <!-- Navbar -->
     <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
-        <div class="container mx-auto px-6 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold text-white flex items-center gap-2">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <a href="#" class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-helmet-safety text-gold-400"></i>
-                <span>DUTA<span class="text-gold-400">UTAMA</span></span>
+                <span>DUTA<span class="text-gold-400 hidden sm:inline">UTAMA</span></span>
             </a>
-            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+            <div class="hidden lg:flex items-center gap-8 text-sm font-medium">
                 <a href="#home" class="hover:text-gold-400 transition">Home</a>
                 <a href="#about" class="hover:text-gold-400 transition">About</a>
                 <a href="#services" class="hover:text-gold-400 transition">Services</a>
@@ -76,143 +88,173 @@
                 <a href="#career" class="hover:text-gold-400 transition">Career</a>
                 <a href="#contact" class="px-5 py-2 bg-gold-500 text-navy-900 rounded-full font-bold hover:bg-gold-400 transition">Contact Us</a>
             </div>
-            <button id="mobile-menu-btn" class="md:hidden text-2xl text-white"><i class="fa-solid fa-bars"></i></button>
+            <button id="mobile-menu-btn" class="lg:hidden text-2xl text-white p-2">
+                <i class="fa-solid fa-bars"></i>
+            </button>
         </div>
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 w-full glass-dark border-t border-white/10 p-6 flex flex-col gap-4">
-            <a href="#home" class="block hover:text-gold-400">Home</a>
-            <a href="#about" class="block hover:text-gold-400">About</a>
-            <a href="#projects" class="block hover:text-gold-400">Projects</a>
-            <a href="#contact" class="block text-gold-400 font-bold">Contact Us</a>
+        <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 w-full glass-dark border-t border-white/10 p-4">
+            <div class="flex flex-col gap-3">
+                <a href="#home" class="block px-4 py-2 hover:bg-white/5 rounded-lg">Home</a>
+                <a href="#about" class="block px-4 py-2 hover:bg-white/5 rounded-lg">About</a>
+                <a href="#services" class="block px-4 py-2 hover:bg-white/5 rounded-lg">Services</a>
+                <a href="#projects" class="block px-4 py-2 hover:bg-white/5 rounded-lg">Projects</a>
+                <a href="#career" class="block px-4 py-2 hover:bg-white/5 rounded-lg">Career</a>
+                <a href="#contact" class="block px-4 py-2 text-gold-400 font-bold">Contact Us</a>
+            </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="hero-bg min-h-screen flex items-center relative">
-        <div class="container mx-auto px-6 pt-20" data-aos="fade-up">
-            <div class="max-w-3xl">
-                <span class="inline-block px-4 py-1 rounded-full border border-gold-400/30 text-gold-400 text-sm font-semibold mb-6 bg-gold-400/10">
+    <section id="home" class="hero-bg min-h-screen flex items-center relative pt-20 pb-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up">
+            <div class="max-w-4xl mx-auto text-center">
+                <span class="inline-block px-4 py-2 rounded-full border border-gold-400/30 text-gold-400 text-xs sm:text-sm font-semibold mb-6 bg-gold-400/10">
                     <i class="fa-solid fa-star mr-2"></i> Trusted EPC Contractor Since 2008
                 </span>
-                <h1 class="text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+                <h1 class="hero-title text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
                     Building the Future with <span class="text-gradient">Precision & Integrity</span>
                 </h1>
-                <p class="text-lg text-gray-400 mb-8 max-w-2xl">
+                <p class="hero-desc text-sm sm:text-lg text-gray-300 mb-8 max-w-3xl mx-auto px-2">
                     PT. Duta Utama Tehnik Abadi menyediakan solusi terintegrasi di bidang Mechanical, Piping, Civil, Electrical, dan Tank Construction dengan standar keselamatan dan kualitas tertinggi.
                 </p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="#projects" class="px-8 py-4 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition flex items-center gap-2">
+                <div class="cta-buttons flex flex-col sm:flex-row justify-center gap-4 mb-12 px-4">
+                    <a href="#projects" class="btn px-8 py-4 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition flex items-center justify-center gap-2 shadow-lg shadow-gold-500/25">
                         Lihat Proyek <i class="fa-solid fa-arrow-right"></i>
                     </a>
-                    <a href="#contact" class="px-8 py-4 border border-white/20 text-white font-semibold rounded-lg hover:bg-white/10 transition glass">
+                    <a href="#contact" class="btn px-8 py-4 border-2 border-white/20 text-white font-semibold rounded-lg hover:bg-white/10 transition glass flex items-center justify-center gap-2">
                         Hubungi Kami
                     </a>
                 </div>
             </div>
-        </div>
-        <!-- Stats -->
-        <div class="absolute bottom-0 left-0 w-full glass border-t border-white/10">
-            <div class="container mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div><h3 class="text-3xl font-bold text-gold-400 counter" data-target="150">0</h3><p class="text-sm text-gray-400">Proyek Selesai</p></div>
-                <div><h3 class="text-3xl font-bold text-gold-400 counter" data-target="35">0</h3><p class="text-sm text-gray-400">Klien Korporat</p></div>
-                <div><h3 class="text-3xl font-bold text-gold-400 counter" data-target="15">0</h3><p class="text-sm text-gray-400">Tahun Pengalaman</p></div>
-                <div><h3 class="text-3xl font-bold text-gold-400 counter" data-target="8">0</h3><p class="text-sm text-gray-400">Layanan Inti</p></div>
+            
+            <!-- Stats Section - Separate Container -->
+            <div class="mt-12 sm:mt-16" data-aos="fade-up" data-aos-delay="300">
+                <div class="glass rounded-2xl p-6 sm:p-8 border border-white/10">
+                    <div class="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                        <div class="text-center p-4">
+                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="150">0</h3>
+                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Proyek Selesai</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="35">0</h3>
+                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Klien Korporat</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="15">0</h3>
+                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Tahun Pengalaman</p>
+                        </div>
+                        <div class="text-center p-4">
+                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="8">0</h3>
+                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Layanan Inti</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- About Section -->
-    <section id="about" class="py-24 bg-navy-800">
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-2 gap-16 items-center">
+    <section id="about" class="py-16 sm:py-24 bg-navy-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
                 <div data-aos="fade-right">
-                    <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80" alt="About Duta Utama" class="rounded-2xl shadow-2xl border border-white/10">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80" alt="About Duta Utama" class="rounded-2xl shadow-2xl border border-white/10 w-full">
+                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-gold-500/20 rounded-full blur-2xl"></div>
+                    </div>
                 </div>
                 <div data-aos="fade-left">
                     <h4 class="text-gold-400 font-semibold mb-2">TENTANG KAMI</h4>
-                    <h2 class="text-4xl font-bold text-white mb-6">Mitra Strategis untuk Solusi Industri Berkelanjutan</h2>
-                    <p class="text-gray-400 mb-6 leading-relaxed">
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white mb-6">Mitra Strategis untuk Solusi Industri Berkelanjutan</h2>
+                    <p class="text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
                         PT. Duta Utama Tehnik Abadi berkomitmen untuk memberikan layanan Engineering, Procurement, and Construction (EPC) yang unggul. Kami mengutamakan keselamatan (HSE), kualitas, dan ketepatan waktu dalam setiap proyek.
                     </p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1"></i><span class="text-gray-300">Sertifikasi ISO 9001:2015</span></div>
-                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1"></i><span class="text-gray-300">Tim Ahli Bersertifikat</span></div>
-                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1"></i><span class="text-gray-300">Zero Accident Policy</span></div>
-                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1"></i><span class="text-gray-300">Teknologi Terkini</span></div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
+                            <span class="text-gray-300 text-sm">Sertifikasi ISO 9001:2015</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
+                            <span class="text-gray-300 text-sm">Tim Ahli Bersertifikat</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
+                            <span class="text-gray-300 text-sm">Zero Accident Policy</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
+                            <span class="text-gray-300 text-sm">Teknologi Terkini</span>
+                        </div>
                     </div>
-                    <a href="#" class="text-gold-400 font-semibold hover:text-gold-500 flex items-center gap-2">Download Company Profile <i class="fa-solid fa-download"></i></a>
+                    <a href="#" class="inline-flex items-center gap-2 text-gold-400 font-semibold hover:text-gold-500 transition">
+                        Download Company Profile <i class="fa-solid fa-download"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-24 bg-navy-900 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-gold-500/5 rounded-full blur-3xl"></div>
-        <div class="container mx-auto px-6 relative z-10">
-            <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+    <section id="services" class="py-16 sm:py-24 bg-navy-900 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 sm:w-96 h-64 sm:h-96 bg-gold-500/5 rounded-full blur-3xl"></div>
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16" data-aos="fade-up">
                 <h4 class="text-gold-400 font-semibold mb-2">LAYANAN KAMI</h4>
-                <h2 class="text-4xl font-bold text-white">Solusi End-to-End untuk Industri Anda</h2>
+                <h2 class="text-2xl sm:text-4xl font-bold text-white">Solusi End-to-End untuk Industri Anda</h2>
             </div>
-            <div id="services-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Diisi otomatis oleh JavaScript dari Google Sheets -->
-                <div class="glass p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="100">
-                    <div class="w-14 h-14 bg-gold-400/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold-400 transition">
-                        <i class="fa-solid fa-gears text-2xl text-gold-400 group-hover:text-navy-900"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-3">Mechanical</h3>
-                    <p class="text-gray-400 text-sm">Instalasi, perawatan, dan fabrikasi peralatan mekanik industri dengan presisi tinggi.</p>
-                </div>
-                <!-- Dummy items akan diganti oleh fetch API -->
+            <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Services will be loaded here -->
             </div>
         </div>
     </section>
 
     <!-- Projects Section -->
-    <section id="projects" class="py-24 bg-navy-800">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12" data-aos="fade-up">
+    <section id="projects" class="py-16 sm:py-24 bg-navy-800">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 sm:mb-12 gap-4" data-aos="fade-up">
                 <div>
                     <h4 class="text-gold-400 font-semibold mb-2">PORTOFOLIO</h4>
-                    <h2 class="text-4xl font-bold text-white">Pengalaman Proyek</h2>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white">Pengalaman Proyek</h2>
                 </div>
-                <div class="mt-6 md:mt-0 flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                    <input type="text" id="project-search" placeholder="Cari klien atau proyek..." class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white focus:border-gold-400 focus:outline-none w-full sm:w-64">
-                    <select id="category-filter" class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white focus:border-gold-400 focus:outline-none">
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <input type="text" id="project-search" placeholder="Cari klien atau proyek..." 
+                        class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none w-full sm:w-64">
+                    <select id="category-filter" 
+                        class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
                         <option value="All">Semua Kategori</option>
-                        <!-- Diisi otomatis oleh JS -->
                     </select>
                 </div>
             </div>
             
-            <div id="projects-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Project cards will be injected here by JS -->
-                <div class="col-span-full text-center py-12 text-gray-500">Memuat data proyek...</div>
+            <div id="projects-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Projects will be loaded here -->
             </div>
         </div>
     </section>
 
     <!-- Career Section -->
-    <section id="career" class="py-24 bg-navy-900">
-        <div class="container mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+    <section id="career" class="py-16 sm:py-24 bg-navy-900">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-12 sm:mb-16" data-aos="fade-up">
                 <h4 class="text-gold-400 font-semibold mb-2">KARIR</h4>
-                <h2 class="text-4xl font-bold text-white">Bergabung dengan Tim Kami</h2>
+                <h2 class="text-2xl sm:text-4xl font-bold text-white">Bergabung dengan Tim Kami</h2>
             </div>
-            <div class="glass rounded-2xl overflow-hidden" data-aos="fade-up">
+            <div class="glass rounded-xl sm:rounded-2xl overflow-hidden" data-aos="fade-up">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
-                        <thead class="bg-white/5 text-gold-400 text-sm uppercase">
+                        <thead class="bg-white/5 text-gold-400 text-xs sm:text-sm uppercase">
                             <tr>
-                                <th class="px-6 py-4">Posisi</th>
-                                <th class="px-6 py-4">Lokasi</th>
-                                <th class="px-6 py-4">Batas Waktu</th>
-                                <th class="px-6 py-4">Status</th>
-                                <th class="px-6 py-4">Aksi</th>
+                                <th class="px-4 sm:px-6 py-4">Posisi</th>
+                                <th class="px-4 sm:px-6 py-4">Lokasi</th>
+                                <th class="px-4 sm:px-6 py-4 hidden sm:table-cell">Batas Waktu</th>
+                                <th class="px-4 sm:px-6 py-4">Status</th>
+                                <th class="px-4 sm:px-6 py-4">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="career-table-body" class="divide-y divide-white/10 text-gray-300">
-                            <!-- Diisi oleh JS -->
+                        <tbody id="career-table-body" class="divide-y divide-white/10 text-gray-300 text-sm">
+                            <!-- Career items will be loaded here -->
                         </tbody>
                     </table>
                 </div>
@@ -221,39 +263,68 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-24 bg-navy-800 relative">
-        <div class="container mx-auto px-6">
-            <div class="grid lg:grid-cols-2 gap-16">
+    <section id="contact" class="py-16 sm:py-24 bg-navy-800 relative">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-16">
                 <div data-aos="fade-right">
                     <h4 class="text-gold-400 font-semibold mb-2">HUBUNGI KAMI</h4>
-                    <h2 class="text-4xl font-bold text-white mb-6">Mari Diskusikan Proyek Anda</h2>
-                    <p class="text-gray-400 mb-8">Tim kami siap memberikan konsultasi dan penawaran terbaik untuk kebutuhan industri Anda.</p>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white mb-6">Mari Diskusikan Proyek Anda</h2>
+                    <p class="text-gray-400 mb-8 text-sm sm:text-base">Tim kami siap memberikan konsultasi dan penawaran terbaik untuk kebutuhan industri Anda.</p>
                     
-                    <div class="space-y-6">
+                    <div class="space-y-4 sm:space-y-6">
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-location-dot text-gold-400"></i></div>
-                            <div><h4 class="text-white font-semibold">Kantor Pusat</h4><p class="text-gray-400 text-sm">Jl. Industri Raya No. 123, Jakarta, Indonesia</p></div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-location-dot text-gold-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm sm:text-base">Kantor Pusat</h4>
+                                <p class="text-gray-400 text-xs sm:text-sm">Jl. Industri Raya No. 123, Jakarta, Indonesia</p>
+                            </div>
                         </div>
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-envelope text-gold-400"></i></div>
-                            <div><h4 class="text-white font-semibold">Email</h4><p class="text-gray-400 text-sm">info@pt-duta.com</p></div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-envelope text-gold-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm sm:text-base">Email</h4>
+                                <p class="text-gray-400 text-xs sm:text-sm">info@pt-duta.com</p>
+                            </div>
                         </div>
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-phone text-gold-400"></i></div>
-                            <div><h4 class="text-white font-semibold">Telepon</h4><p class="text-gray-400 text-sm">+62 21 1234 5678</p></div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-phone text-gold-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm sm:text-base">Telepon</h4>
+                                <p class="text-gray-400 text-xs sm:text-sm">+62 21 1234 5678</p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="glass p-8 rounded-2xl" data-aos="fade-left">
-                    <form class="space-y-6">
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div><label class="block text-sm text-gray-400 mb-2">Nama Lengkap</label><input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white focus:border-gold-400 focus:outline-none"></div>
-                            <div><label class="block text-sm text-gray-400 mb-2">Email</label><input type="email" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white focus:border-gold-400 focus:outline-none"></div>
+                <div class="glass p-4 sm:p-8 rounded-xl sm:rounded-2xl" data-aos="fade-left">
+                    <form class="space-y-4 sm:space-y-6">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs sm:text-sm text-gray-400 mb-2">Nama Lengkap</label>
+                                <input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs sm:text-sm text-gray-400 mb-2">Email</label>
+                                <input type="email" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
+                            </div>
                         </div>
-                        <div><label class="block text-sm text-gray-400 mb-2">Subjek</label><input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white focus:border-gold-400 focus:outline-none"></div>
-                        <div><label class="block text-sm text-gray-400 mb-2">Pesan</label><textarea rows="4" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white focus:border-gold-400 focus:outline-none"></textarea></div>
-                        <button type="submit" class="w-full py-4 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition">Kirim Pesan</button>
+                        <div>
+                            <label class="block text-xs sm:text-sm text-gray-400 mb-2">Subjek</label>
+                            <input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs sm:text-sm text-gray-400 mb-2">Pesan</label>
+                            <textarea rows="4" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 sm:py-4 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition text-sm sm:text-base">
+                            Kirim Pesan
+                        </button>
                     </form>
                 </div>
             </div>
@@ -261,24 +332,30 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-navy-900 border-t border-white/10 pt-16 pb-8">
-        <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-12 mb-12">
-                <div class="col-span-1 md:col-span-2">
-                    <a href="#" class="text-2xl font-bold text-white flex items-center gap-2 mb-4">
+    <footer class="bg-navy-900 border-t border-white/10 pt-12 sm:pt-16 pb-8">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-8 sm:mb-12">
+                <div class="sm:col-span-2">
+                    <a href="#" class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-4">
                         <i class="fa-solid fa-helmet-safety text-gold-400"></i>
-                        <span>DUTA<span class="text-gold-400">UTAMA</span></span>
+                        <span>DUTA<span class="text-gold-400 hidden sm:inline">UTAMA</span></span>
                     </a>
-                    <p class="text-gray-400 text-sm max-w-sm mb-6">Mitra terpercaya dalam solusi Engineering, Procurement, and Construction (EPC) dengan komitmen pada kualitas, keselamatan, dan inovasi.</p>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition"><i class="fa-brands fa-linkedin-in"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition"><i class="fa-brands fa-facebook-f"></i></a>
+                    <p class="text-gray-400 text-xs sm:text-sm max-w-sm mb-6">Mitra terpercaya dalam solusi Engineering, Procurement, and Construction (EPC) dengan komitmen pada kualitas, keselamatan, dan inovasi.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition text-sm sm:text-base">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition text-sm sm:text-base">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition text-sm sm:text-base">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-white font-semibold mb-4">Tautan Cepat</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="text-white font-semibold mb-4 text-sm sm:text-base">Tautan Cepat</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-400">
                         <li><a href="#about" class="hover:text-gold-400 transition">Tentang Kami</a></li>
                         <li><a href="#services" class="hover:text-gold-400 transition">Layanan</a></li>
                         <li><a href="#projects" class="hover:text-gold-400 transition">Proyek</a></li>
@@ -286,35 +363,36 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="text-white font-semibold mb-4">Legal</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
+                    <h4 class="text-white font-semibold mb-4 text-sm sm:text-base">Legal</h4>
+                    <ul class="space-y-2 text-xs sm:text-sm text-gray-400">
                         <li><a href="#" class="hover:text-gold-400 transition">Kebijakan Privasi</a></li>
                         <li><a href="#" class="hover:text-gold-400 transition">Syarat & Ketentuan</a></li>
                         <li><a href="#" class="hover:text-gold-400 transition">Sertifikasi HSE</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-white/10 pt-8 text-center text-sm text-gray-500">
+            <div class="border-t border-white/10 pt-6 sm:pt-8 text-center text-xs sm:text-sm text-gray-500">
                 &copy; 2026 PT. Duta Utama Tehnik Abadi. All rights reserved.
             </div>
         </div>
     </footer>
 
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/6281234567890" target="_blank" class="fixed bottom-6 right-6 w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white text-2xl shadow-lg hover:bg-green-600 transition z-40 animate-bounce">
+    <a href="https://wa.me/6281234567890" target="_blank" 
+        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-green-500 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg hover:bg-green-600 transition z-40">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
     <!-- JavaScript Logic -->
     <script>
         // ==========================================
-        // KONFIGURASI CMS (Ganti dengan URL Web App Anda)
+        // KONFIGURASI CMS
         // ==========================================
         const CMS_API_URL = "GANTI_DENGAN_URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DI_SINI";
-        const USE_DUMMY_DATA = true; // Ubah ke 'false' setelah Google Sheet terhubung
+        const USE_DUMMY_DATA = true;
 
         // ==========================================
-        // DUMMY DATA (Fallback jika API belum siap)
+        // DUMMY DATA
         // ==========================================
         const dummyData = {
             services: [
@@ -359,12 +437,12 @@
         function renderServices() {
             const grid = document.getElementById('services-grid');
             grid.innerHTML = appData.services.map((s, i) => `
-                <div class="glass p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="${i * 100}">
-                    <div class="w-14 h-14 bg-gold-400/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold-400 transition">
-                        <i class="fa-solid ${s.icon} text-2xl text-gold-400 group-hover:text-navy-900"></i>
+                <div class="glass p-6 sm:p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="${i * 100}">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gold-400/10 rounded-lg flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-gold-400 transition">
+                        <i class="fa-solid ${s.icon} text-xl sm:text-2xl text-gold-400 group-hover:text-navy-900"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-3">${s.name}</h3>
-                    <p class="text-gray-400 text-sm">${s.desc}</p>
+                    <h3 class="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">${s.name}</h3>
+                    <p class="text-gray-400 text-xs sm:text-sm">${s.desc}</p>
                 </div>
             `).join('');
         }
@@ -377,7 +455,7 @@
         function renderProjects(projects) {
             const grid = document.getElementById('projects-grid');
             if (projects.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500">Tidak ada proyek yang ditemukan.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 text-sm">Tidak ada proyek yang ditemukan.</div>`;
                 return;
             }
             grid.innerHTML = projects.map((p, i) => `
@@ -386,10 +464,10 @@
                         <img src="${p.image}" alt="${p.project}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/50 to-transparent opacity-90"></div>
-                    <div class="absolute bottom-0 left-0 p-6 w-full">
-                        <span class="inline-block px-3 py-1 bg-gold-500 text-navy-900 text-xs font-bold rounded-full mb-3">${p.category}</span>
-                        <h3 class="text-xl font-bold text-white mb-1">${p.project}</h3>
-                        <p class="text-gray-300 text-sm mb-2"><i class="fa-solid fa-building-user mr-2 text-gold-400"></i>${p.client}</p>
+                    <div class="absolute bottom-0 left-0 p-4 sm:p-6 w-full">
+                        <span class="inline-block px-2 sm:px-3 py-1 bg-gold-500 text-navy-900 text-xs font-bold rounded-full mb-2 sm:mb-3">${p.category}</span>
+                        <h3 class="text-base sm:text-xl font-bold text-white mb-1 line-clamp-2">${p.project}</h3>
+                        <p class="text-gray-300 text-xs sm:text-sm mb-2"><i class="fa-solid fa-building-user mr-2 text-gold-400"></i>${p.client}</p>
                         <p class="text-gray-400 text-xs"><i class="fa-solid fa-location-dot mr-2"></i>${p.location} &bull; ${p.year}</p>
                     </div>
                 </div>
@@ -400,11 +478,11 @@
             const tbody = document.getElementById('career-table-body');
             tbody.innerHTML = appData.career.map(c => `
                 <tr class="hover:bg-white/5 transition">
-                    <td class="px-6 py-4 font-semibold text-white">${c.position}</td>
-                    <td class="px-6 py-4"><i class="fa-solid fa-location-dot text-gold-400 mr-2"></i>${c.location}</td>
-                    <td class="px-6 py-4 text-sm">${c.closing}</td>
-                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${c.status === 'Open' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">${c.status}</span></td>
-                    <td class="px-6 py-4"><a href="mailto:hrd@pt-duta.com?subject=Lamaran ${c.position}" class="text-gold-400 hover:text-gold-500 font-semibold text-sm">Apply <i class="fa-solid fa-arrow-right ml-1"></i></a></td>
+                    <td class="px-4 sm:px-6 py-4 font-semibold text-white text-xs sm:text-sm">${c.position}</td>
+                    <td class="px-4 sm:px-6 py-4 text-xs sm:text-sm"><i class="fa-solid fa-location-dot text-gold-400 mr-2"></i>${c.location}</td>
+                    <td class="px-4 sm:px-6 py-4 text-xs hidden sm:table-cell">${c.closing}</td>
+                    <td class="px-4 sm:px-6 py-4"><span class="px-2 sm:px-3 py-1 rounded-full text-xs font-bold ${c.status === 'Open' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">${c.status}</span></td>
+                    <td class="px-4 sm:px-6 py-4"><a href="mailto:hrd@pt-duta.com?subject=Lamaran ${c.position}" class="text-gold-400 hover:text-gold-500 font-semibold text-xs sm:text-sm">Apply <i class="fa-solid fa-arrow-right ml-1"></i></a></td>
                 </tr>
             `).join('');
         }
@@ -435,7 +513,6 @@
                     nav.classList.add('py-4');
                 }
                 
-                // Scroll Progress
                 const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 progress.style.width = (winScroll / height) * 100 + "%";
