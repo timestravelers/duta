@@ -31,10 +31,13 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
+    <!-- Visitor Counter -->
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .glass-dark { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-dark { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
         .text-gradient { background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-bg { 
             background: linear-gradient(rgba(2, 6, 23, 0.85), rgba(2, 6, 23, 0.9)), url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80') center/cover no-repeat fixed;
@@ -45,7 +48,65 @@
         #loader { position: fixed; inset: 0; background: #020617; z-index: 10000; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .spinner { width: 50px; height: 50px; border: 3px solid rgba(245, 158, 11, 0.3); border-radius: 50%; border-top-color: #f59e0b; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modal & Lightbox Styles */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px);
+            z-index: 1000; display: none; opacity: 0; transition: opacity 0.3s ease; overflow-y: auto; padding: 2rem 1rem;
+        }
+        .modal-overlay.active { display: flex; justify-content: center; align-items: flex-start; opacity: 1; }
         
+        .modal-content {
+            background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem;
+            max-width: 900px; width: 100%; position: relative; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem; width: 2.5rem; height: 2.5rem;
+            background: rgba(255, 255, 255, 0.1); border: none; border-radius: 50%; color: white;
+            font-size: 1.25rem; cursor: pointer; z-index: 10; display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+        }
+        .modal-close:hover { background: #f59e0b; color: #020617; }
+
+        .gallery-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1rem;
+        }
+        @media (min-width: 640px) {
+            .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        }
+        @media (min-width: 1024px) {
+            .gallery-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        
+        .gallery-item {
+            aspect-ratio: 1; overflow: hidden; border-radius: 0.5rem; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.3s; background: #1e293b;
+        }
+        .gallery-item:hover { border-color: #f59e0b; transform: scale(1.03); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .lightbox {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.98); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img { max-width: 95%; max-height: 90vh; object-fit: contain; border-radius: 0.5rem; }
+        
+        .lightbox-btn {
+            position: absolute; color: white; cursor: pointer; background: rgba(255, 255, 255, 0.1);
+            width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.3s; border: none; font-size: 1.5rem;
+        }
+        .lightbox-btn:hover { background: #f59e0b; color: #020617; }
+        .lightbox-close { top: 1.5rem; right: 1.5rem; }
+        .lightbox-prev { left: 1rem; top: 50%; transform: translateY(-50%); }
+        .lightbox-next { right: 1rem; top: 50%; transform: translateY(-50%); }
+        
+        @media (min-width: 768px) {
+            .lightbox-prev { left: 2rem; }
+            .lightbox-next { right: 2rem; }
+        }
+
         /* Responsive Utilities */
         @media (max-width: 640px) {
             .hero-title { font-size: 2rem; line-height: 2.5rem; }
@@ -54,27 +115,12 @@
             .cta-buttons { flex-direction: column; gap: 0.75rem; }
             .cta-buttons .btn { width: 100%; text-align: center; }
         }
-        
         @media (min-width: 641px) and (max-width: 1024px) {
             .hero-title { font-size: 2.5rem; line-height: 3rem; }
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
         }
-        
         @media (min-width: 1025px) {
             .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 2rem; }
-        }
-    </style>
-
-        <!-- ... kode head lainnya ... -->
-    
-    <!-- Serverless Visitor Counter (Ringan & Tanpa Database) -->
-    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-    
-    <style>
-        /* ... style lainnya ... */
-        /* Animasi halus untuk angka counter */
-        #busuanzi_value_site_pv, #busuanzi_value_site_uv {
-            transition: all 0.3s ease;
         }
     </style>
 </head>
@@ -83,8 +129,6 @@
 
     <!-- Loading Screen -->
     <div id="loader"><div class="spinner"></div></div>
-    
-    <!-- Scroll Progress -->
     <div id="progress-bar"></div>
 
     <!-- Navbar -->
@@ -92,7 +136,7 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <a href="#" class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
                 <i class="fa-solid fa-helmet-safety text-gold-400"></i>
-                <span>PT. DUTA<span class="text-gold-400 hidden sm:inline">UTAMA</span> TEHNIK ABADI</span>
+                <span>DUTA<span class="text-gold-400 hidden sm:inline">UTAMA</span></span>
             </a>
             <div class="hidden lg:flex items-center gap-8 text-sm font-medium">
                 <a href="#home" class="hover:text-gold-400 transition">Home</a>
@@ -102,11 +146,8 @@
                 <a href="#career" class="hover:text-gold-400 transition">Career</a>
                 <a href="#contact" class="px-5 py-2 bg-gold-500 text-navy-900 rounded-full font-bold hover:bg-gold-400 transition">Contact Us</a>
             </div>
-            <button id="mobile-menu-btn" class="lg:hidden text-2xl text-white p-2">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+            <button id="mobile-menu-btn" class="lg:hidden text-2xl text-white p-2"><i class="fa-solid fa-bars"></i></button>
         </div>
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 w-full glass-dark border-t border-white/10 p-4">
             <div class="flex flex-col gap-3">
                 <a href="#home" class="block px-4 py-2 hover:bg-white/5 rounded-lg">Home</a>
@@ -142,26 +183,13 @@
                 </div>
             </div>
             
-            <!-- Stats Section - Separate Container -->
             <div class="mt-12 sm:mt-16" data-aos="fade-up" data-aos-delay="300">
                 <div class="glass rounded-2xl p-6 sm:p-8 border border-white/10">
                     <div class="stats-grid grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                        <div class="text-center p-4">
-                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="150">0</h3>
-                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Proyek Selesai</p>
-                        </div>
-                        <div class="text-center p-4">
-                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="35">0</h3>
-                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Klien Korporat</p>
-                        </div>
-                        <div class="text-center p-4">
-                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="15">0</h3>
-                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Tahun Pengalaman</p>
-                        </div>
-                        <div class="text-center p-4">
-                            <h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="8">0</h3>
-                            <p class="text-xs sm:text-sm text-gray-400 mt-2">Layanan Inti</p>
-                        </div>
+                        <div class="text-center p-4"><h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="150">0</h3><p class="text-xs sm:text-sm text-gray-400 mt-2">Proyek Selesai</p></div>
+                        <div class="text-center p-4"><h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="35">0</h3><p class="text-xs sm:text-sm text-gray-400 mt-2">Klien Korporat</p></div>
+                        <div class="text-center p-4"><h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="15">0</h3><p class="text-xs sm:text-sm text-gray-400 mt-2">Tahun Pengalaman</p></div>
+                        <div class="text-center p-4"><h3 class="text-3xl sm:text-4xl font-bold text-gold-400 counter" data-target="8">0</h3><p class="text-xs sm:text-sm text-gray-400 mt-2">Layanan Inti</p></div>
                     </div>
                 </div>
             </div>
@@ -174,37 +202,23 @@
             <div class="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
                 <div data-aos="fade-right">
                     <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80" alt="About Duta Utama" class="rounded-2xl shadow-2xl border border-white/10 w-full">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80" alt="About" class="rounded-2xl shadow-2xl border border-white/10 w-full">
                         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-gold-500/20 rounded-full blur-2xl"></div>
                     </div>
                 </div>
                 <div data-aos="fade-left">
                     <h4 class="text-gold-400 font-semibold mb-2">TENTANG KAMI</h4>
-                    <h2 class="text-2xl sm:text-4xl font-bold text-white mb-6">Mitra Strategis untuk Solusi Industri Berkelanjutan</h2>
+                    <h2 class="text-2xl sm:text-4xl font-bold text-white mb-6">Mitra Strategis untuk Solusi Industri</h2>
                     <p class="text-gray-400 mb-6 leading-relaxed text-sm sm:text-base">
-                        PT. Duta Utama Tehnik Abadi berkomitmen untuk memberikan layanan Engineering, Procurement, and Construction (EPC) yang unggul. Kami mengutamakan keselamatan (HSE), kualitas, dan ketepatan waktu dalam setiap proyek.
+                        PT. Duta Utama Tehnik Abadi berkomitmen untuk memberikan layanan Engineering, Procurement, and Construction (EPC) yang unggul. Kami mengutamakan keselamatan (HSE), kualitas, dan ketepatan waktu.
                     </p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
-                            <span class="text-gray-300 text-sm">Sertifikasi ISO 9001:2015</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
-                            <span class="text-gray-300 text-sm">Tim Ahli Bersertifikat</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
-                            <span class="text-gray-300 text-sm">Zero Accident Policy</span>
-                        </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i>
-                            <span class="text-gray-300 text-sm">Teknologi Terkini</span>
-                        </div>
+                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i><span class="text-gray-300 text-sm">Sertifikasi ISO 9001:2015</span></div>
+                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i><span class="text-gray-300 text-sm">Tim Ahli Bersertifikat</span></div>
+                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i><span class="text-gray-300 text-sm">Zero Accident Policy</span></div>
+                        <div class="flex items-start gap-3"><i class="fa-solid fa-check-circle text-gold-400 mt-1 flex-shrink-0"></i><span class="text-gray-300 text-sm">Teknologi Terkini</span></div>
                     </div>
-                    <a href="#" class="inline-flex items-center gap-2 text-gold-400 font-semibold hover:text-gold-500 transition">
-                        Download Company Profile <i class="fa-solid fa-download"></i>
-                    </a>
+                    <a href="#" class="inline-flex items-center gap-2 text-gold-400 font-semibold hover:text-gold-500 transition">Download Company Profile <i class="fa-solid fa-download"></i></a>
                 </div>
             </div>
         </div>
@@ -218,9 +232,7 @@
                 <h4 class="text-gold-400 font-semibold mb-2">LAYANAN KAMI</h4>
                 <h2 class="text-2xl sm:text-4xl font-bold text-white">Solusi End-to-End untuk Industri Anda</h2>
             </div>
-            <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <!-- Services will be loaded here -->
-            </div>
+            <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"></div>
         </div>
     </section>
 
@@ -233,18 +245,13 @@
                     <h2 class="text-2xl sm:text-4xl font-bold text-white">Pengalaman Proyek</h2>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <input type="text" id="project-search" placeholder="Cari klien atau proyek..." 
-                        class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none w-full sm:w-64">
-                    <select id="category-filter" 
-                        class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
+                    <input type="text" id="project-search" placeholder="Cari klien atau proyek..." class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none w-full sm:w-64">
+                    <select id="category-filter" class="px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
                         <option value="All">Semua Kategori</option>
                     </select>
                 </div>
             </div>
-            
-            <div id="projects-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-                <!-- Projects will be loaded here -->
-            </div>
+            <div id="projects-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"></div>
         </div>
     </section>
 
@@ -267,9 +274,7 @@
                                 <th class="px-4 sm:px-6 py-4">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="career-table-body" class="divide-y divide-white/10 text-gray-300 text-sm">
-                            <!-- Career items will be loaded here -->
-                        </tbody>
+                        <tbody id="career-table-body" class="divide-y divide-white/10 text-gray-300 text-sm"></tbody>
                     </table>
                 </div>
             </div>
@@ -284,61 +289,30 @@
                     <h4 class="text-gold-400 font-semibold mb-2">HUBUNGI KAMI</h4>
                     <h2 class="text-2xl sm:text-4xl font-bold text-white mb-6">Mari Diskusikan Proyek Anda</h2>
                     <p class="text-gray-400 mb-8 text-sm sm:text-base">Tim kami siap memberikan konsultasi dan penawaran terbaik untuk kebutuhan industri Anda.</p>
-                    
                     <div class="space-y-4 sm:space-y-6">
                         <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0">
-                                <i class="fa-solid fa-location-dot text-gold-400"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-white font-semibold text-sm sm:text-base">Kantor Pusat</h4>
-                                <p class="text-gray-400 text-xs sm:text-sm">Jl. Industri Raya No. 123, Jakarta, Indonesia</p>
-                            </div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-location-dot text-gold-400"></i></div>
+                            <div><h4 class="text-white font-semibold text-sm sm:text-base">Kantor Pusat</h4><p class="text-gray-400 text-xs sm:text-sm">Jl. Industri Raya No. 123, Jakarta, Indonesia</p></div>
                         </div>
                         <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0">
-                                <i class="fa-solid fa-envelope text-gold-400"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-white font-semibold text-sm sm:text-base">Email</h4>
-                                <p class="text-gray-400 text-xs sm:text-sm">info@pt-duta.com</p>
-                            </div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-envelope text-gold-400"></i></div>
+                            <div><h4 class="text-white font-semibold text-sm sm:text-base">Email</h4><p class="text-gray-400 text-xs sm:text-sm">info@pt-duta.com</p></div>
                         </div>
                         <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0">
-                                <i class="fa-solid fa-phone text-gold-400"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-white font-semibold text-sm sm:text-base">Telepon</h4>
-                                <p class="text-gray-400 text-xs sm:text-sm">+62 21 1234 5678</p>
-                            </div>
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gold-400/10 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-phone text-gold-400"></i></div>
+                            <div><h4 class="text-white font-semibold text-sm sm:text-base">Telepon</h4><p class="text-gray-400 text-xs sm:text-sm">+62 21 1234 5678</p></div>
                         </div>
                     </div>
                 </div>
-                
                 <div class="glass p-4 sm:p-8 rounded-xl sm:rounded-2xl" data-aos="fade-left">
                     <form class="space-y-4 sm:space-y-6">
                         <div class="grid sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs sm:text-sm text-gray-400 mb-2">Nama Lengkap</label>
-                                <input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs sm:text-sm text-gray-400 mb-2">Email</label>
-                                <input type="email" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
-                            </div>
+                            <div><label class="block text-xs sm:text-sm text-gray-400 mb-2">Nama Lengkap</label><input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></div>
+                            <div><label class="block text-xs sm:text-sm text-gray-400 mb-2">Email</label><input type="email" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></div>
                         </div>
-                        <div>
-                            <label class="block text-xs sm:text-sm text-gray-400 mb-2">Subjek</label>
-                            <input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs sm:text-sm text-gray-400 mb-2">Pesan</label>
-                            <textarea rows="4" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></textarea>
-                        </div>
-                        <button type="submit" class="w-full py-3 sm:py-4 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition text-sm sm:text-base">
-                            Kirim Pesan
-                        </button>
+                        <div><label class="block text-xs sm:text-sm text-gray-400 mb-2">Subjek</label><input type="text" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></div>
+                        <div><label class="block text-xs sm:text-sm text-gray-400 mb-2">Pesan</label><textarea rows="4" class="w-full px-4 py-3 rounded-lg bg-navy-900 border border-white/10 text-white text-sm focus:border-gold-400 focus:outline-none"></textarea></div>
+                        <button type="submit" class="w-full py-3 sm:py-4 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition text-sm sm:text-base">Kirim Pesan</button>
                     </form>
                 </div>
             </div>
@@ -349,29 +323,18 @@
     <footer class="bg-navy-900 border-t border-white/10 pt-12 sm:pt-16 pb-8">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-8 sm:mb-12">
-                <!-- Brand & Deskripsi -->
                 <div class="sm:col-span-2">
                     <a href="#" class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2 mb-4">
                         <i class="fa-solid fa-helmet-safety text-gold-400"></i>
                         <span>DUTA<span class="text-gold-400 hidden sm:inline">UTAMA</span></span>
                     </a>
-                    <p class="text-gray-400 text-xs sm:text-sm max-w-sm mb-6">
-                        Mitra terpercaya dalam solusi Engineering, Procurement, and Construction (EPC) dengan komitmen pada kualitas, keselamatan, dan inovasi berkelanjutan.
-                    </p>
+                    <p class="text-gray-400 text-xs sm:text-sm max-w-sm mb-6">Mitra terpercaya dalam solusi Engineering, Procurement, and Construction (EPC) dengan komitmen pada kualitas, keselamatan, dan inovasi berkelanjutan.</p>
                     <div class="flex gap-3">
-                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition text-sm sm:text-base">
-                            <i class="fa-brands fa-linkedin-in"></i>
-                        </a>
-                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition text-sm sm:text-base">
-                            <i class="fa-brands fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition text-sm sm:text-base">
-                            <i class="fa-brands fa-facebook-f"></i>
-                        </a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-gold-400 hover:text-navy-900 transition"><i class="fa-brands fa-facebook-f"></i></a>
                     </div>
                 </div>
-                
-                <!-- Tautan Cepat -->
                 <div>
                     <h4 class="text-white font-semibold mb-4 text-sm sm:text-base">Tautan Cepat</h4>
                     <ul class="space-y-2 text-xs sm:text-sm text-gray-400">
@@ -381,8 +344,6 @@
                         <li><a href="#career" class="hover:text-gold-400 transition">Karir</a></li>
                     </ul>
                 </div>
-                
-                <!-- Legal -->
                 <div>
                     <h4 class="text-white font-semibold mb-4 text-sm sm:text-base">Legal</h4>
                     <ul class="space-y-2 text-xs sm:text-sm text-gray-400">
@@ -392,31 +353,20 @@
                     </ul>
                 </div>
             </div>
-            
-            <!-- Divider -->
             <div class="border-t border-white/10 pt-6 sm:pt-8">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <!-- Copyright -->
-                    <div class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
-                        &copy; 2026 PT. Duta Utama Tehnik Abadi. All rights reserved.
-                    </div>
-                    
-                    <!-- STATISTIK PENGUNJUNG (BARU) -->
+                    <div class="text-xs sm:text-sm text-gray-500 text-center sm:text-left">&copy; 2026 PT. Duta Utama Tehnik Abadi. All rights reserved.</div>
                     <div class="glass px-4 py-2 rounded-full flex items-center gap-4 sm:gap-6 border border-white/5">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-users text-gold-400 text-xs sm:text-sm"></i>
                             <span class="text-xs sm:text-sm text-gray-400">Pengunjung:</span>
-                            <span id="busuanzi_value_site_uv" class="text-xs sm:text-sm font-bold text-gold-400">
-                                <i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i>
-                            </span>
+                            <span id="busuanzi_value_site_uv" class="text-xs sm:text-sm font-bold text-gold-400"><i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i></span>
                         </div>
                         <div class="w-px h-4 bg-white/10 hidden sm:block"></div>
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-eye text-gold-400 text-xs sm:text-sm"></i>
                             <span class="text-xs sm:text-sm text-gray-400">Halaman Dilihat:</span>
-                            <span id="busuanzi_value_site_pv" class="text-xs sm:text-sm font-bold text-gold-400">
-                                <i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i>
-                            </span>
+                            <span id="busuanzi_value_site_pv" class="text-xs sm:text-sm font-bold text-gold-400"><i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i></span>
                         </div>
                     </div>
                 </div>
@@ -425,22 +375,31 @@
     </footer>
 
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/6281234567890" target="_blank" 
-        class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-green-500 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg hover:bg-green-600 transition z-40">
+    <a href="https://wa.me/6281234567890" target="_blank" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-green-500 rounded-full flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg hover:bg-green-600 transition z-40">
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- Project Detail Modal -->
+    <div id="project-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-times"></i></button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Lightbox for Gallery -->
+    <div id="lightbox" class="lightbox">
+        <button class="lightbox-btn lightbox-close" onclick="closeLightbox()"><i class="fa-solid fa-times"></i></button>
+        <button class="lightbox-btn lightbox-prev" onclick="changeLightboxImage(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <img id="lightbox-img" src="" alt="Gallery View">
+        <button class="lightbox-btn lightbox-next" onclick="changeLightboxImage(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
     <!-- JavaScript Logic -->
     <script>
-        // ==========================================
-        // KONFIGURASI CMS
-        // ==========================================
         const CMS_API_URL = "https://script.google.com/macros/s/AKfycbxwNMCKzER74Ak35bt3Fa7-GvqTVI_vGmmo_nr2fqHMQbGSkhXb4_FGTOF7HKHAmiWR6A/exec";
         const USE_DUMMY_DATA = false;
 
-        // ==========================================
-        // DUMMY DATA
-        // ==========================================
         const dummyData = {
             services: [
                 { name: "Mechanical", icon: "fa-gears", desc: "Instalasi dan perawatan peralatan mekanik industri." },
@@ -450,9 +409,8 @@
             ],
             categories: ["All", "Mechanical", "Piping", "Civil", "Electrical", "Tank"],
             projects: [
-                { year: "2025", client: "PT Pertamina", category: "Tank", project: "Tank Maintenance Balongan", location: "Indramayu", image: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80" },
-                { year: "2024", client: "PLN", category: "Electrical", project: "GI 150kV Upgrade", location: "Bekasi", image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&q=80" },
-                { year: "2023", client: "Chevron", category: "Piping", project: "Pipeline Rehabilitation", location: "Duri, Riau", image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80" }
+                { year: "2025", client: "PT Pertamina", category: "Tank", project: "Tank Maintenance Balongan", location: "Indramayu", image: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80", gallery: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80,https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80", description: "Proyek pemeliharaan tangki penyimpanan dengan standar keselamatan tinggi." },
+                { year: "2024", client: "PLN", category: "Electrical", project: "GI 150kV Upgrade", location: "Bekasi", image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&q=80", gallery: "", description: "Upgrade gardu induk untuk meningkatkan kapasitas distribusi listrik." }
             ],
             career: [
                 { position: "Project Manager", location: "Jakarta", closing: "2026-08-30", status: "Open" },
@@ -460,13 +418,13 @@
             ]
         };
 
-        // ==========================================
-        // CORE FUNCTIONS
-        // ==========================================
         let appData = dummyData;
+        let currentProjects = [];
+        let currentGalleryImages = [];
+        let currentLightboxIndex = 0;
 
         async function initCMS() {
-            if (!USE_DUMMY_DATA && CMS_API_URL !== "GANTI_DENGAN_URL_WEB_APP_GOOGLE_APPS_SCRIPT_ANDA_DI_SINI") {
+            if (!USE_DUMMY_DATA && CMS_API_URL.includes("exec")) {
                 try {
                     const response = await fetch(CMS_API_URL);
                     appData = await response.json();
@@ -476,14 +434,14 @@
             }
             renderServices();
             renderCategories();
-            renderProjects(appData.projects);
+            renderProjects(appData.projects || []);
             renderCareer();
             initAnimations();
         }
 
         function renderServices() {
             const grid = document.getElementById('services-grid');
-            grid.innerHTML = appData.services.map((s, i) => `
+            grid.innerHTML = (appData.services || []).map((s, i) => `
                 <div class="glass p-6 sm:p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="${i * 100}">
                     <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gold-400/10 rounded-lg flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-gold-400 transition">
                         <i class="fa-solid ${s.icon} text-xl sm:text-2xl text-gold-400 group-hover:text-navy-900"></i>
@@ -496,26 +454,32 @@
 
         function renderCategories() {
             const select = document.getElementById('category-filter');
-            select.innerHTML = appData.categories.map(c => `<option value="${c}">${c === 'All' ? 'Semua Kategori' : c}</option>`).join('');
+            select.innerHTML = (appData.categories || ["All"]).map(c => `<option value="${c}">${c === 'All' ? 'Semua Kategori' : c}</option>`).join('');
         }
 
         function renderProjects(projects) {
+            currentProjects = projects;
             const grid = document.getElementById('projects-grid');
-            if (projects.length === 0) {
+            if (!projects || projects.length === 0) {
                 grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 text-sm">Tidak ada proyek yang ditemukan.</div>`;
                 return;
             }
             grid.innerHTML = projects.map((p, i) => `
-                <div class="group relative rounded-xl overflow-hidden glass hover:border-gold-400/50 transition duration-300" data-aos="fade-up" data-aos-delay="${i * 100}">
-                    <div class="aspect-video overflow-hidden">
-                        <img src="${p.image}" alt="${p.project}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                <div class="group relative rounded-xl overflow-hidden glass hover:border-gold-400/50 transition duration-300 cursor-pointer" 
+                     data-aos="fade-up" data-aos-delay="${i * 100}" onclick="openProjectModal(${i})">
+                    <div class="aspect-video overflow-hidden bg-navy-800">
+                        <img src="${p.image}" alt="${p.project}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                             onerror="this.src='https://via.placeholder.com/600x400/0f172a/f59e0b?text=No+Image'">
                     </div>
                     <div class="absolute inset-0 bg-gradient-to-t from-navy-900 via-navy-900/50 to-transparent opacity-90"></div>
                     <div class="absolute bottom-0 left-0 p-4 sm:p-6 w-full">
                         <span class="inline-block px-2 sm:px-3 py-1 bg-gold-500 text-navy-900 text-xs font-bold rounded-full mb-2 sm:mb-3">${p.category}</span>
                         <h3 class="text-base sm:text-xl font-bold text-white mb-1 line-clamp-2">${p.project}</h3>
                         <p class="text-gray-300 text-xs sm:text-sm mb-2"><i class="fa-solid fa-building-user mr-2 text-gold-400"></i>${p.client}</p>
-                        <p class="text-gray-400 text-xs"><i class="fa-solid fa-location-dot mr-2"></i>${p.location} &bull; ${p.year}</p>
+                        <p class="text-gray-400 text-xs"><i class="fa-solid fa-location-dot mr-2"></i>${p.location} • ${p.year}</p>
+                    </div>
+                    <div class="absolute top-4 right-4 w-10 h-10 bg-gold-500/20 backdrop-blur rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                        <i class="fa-solid fa-expand text-gold-400"></i>
                     </div>
                 </div>
             `).join('');
@@ -523,7 +487,7 @@
 
         function renderCareer() {
             const tbody = document.getElementById('career-table-body');
-            tbody.innerHTML = appData.career.map(c => `
+            tbody.innerHTML = (appData.career || []).map(c => `
                 <tr class="hover:bg-white/5 transition">
                     <td class="px-4 sm:px-6 py-4 font-semibold text-white text-xs sm:text-sm">${c.position}</td>
                     <td class="px-4 sm:px-6 py-4 text-xs sm:text-sm"><i class="fa-solid fa-location-dot text-gold-400 mr-2"></i>${c.location}</td>
@@ -534,19 +498,90 @@
             `).join('');
         }
 
-        // ==========================================
-        // EVENT LISTENERS & UI LOGIC
-        // ==========================================
+        // --- MODAL & LIGHTBOX FUNCTIONS ---
+        function openProjectModal(index) {
+            const project = currentProjects[index];
+            const modal = document.getElementById('project-modal');
+            const modalBody = document.getElementById('modal-body');
+            
+            let galleryImages = [];
+            if (project.gallery) {
+                galleryImages = project.gallery.split(',').map(img => img.trim()).filter(img => img.length > 0);
+            }
+            currentGalleryImages = galleryImages;
+            const description = project.description ? project.description.replace(/\n/g, '<br>') : '';
+            
+            modalBody.innerHTML = `
+                <div class="aspect-video overflow-hidden rounded-t-xl bg-navy-800">
+                    <img src="${project.image}" alt="${project.project}" class="w-full h-full object-cover"
+                         onerror="this.src='https://via.placeholder.com/900x500/0f172a/f59e0b?text=No+Image'">
+                </div>
+                <div class="p-6 sm:p-8">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-3 py-1 bg-gold-500 text-navy-900 text-xs font-bold rounded-full">${project.category}</span>
+                        <span class="px-3 py-1 bg-white/10 text-white text-xs rounded-full">${project.year}</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">${project.project}</h2>
+                    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gold-400/10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-building-user text-gold-400"></i></div>
+                            <div><p class="text-xs text-gray-400">Client</p><p class="text-sm font-semibold text-white">${project.client}</p></div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gold-400/10 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-location-dot text-gold-400"></i></div>
+                            <div><p class="text-xs text-gray-400">Location</p><p class="text-sm font-semibold text-white">${project.location}</p></div>
+                        </div>
+                    </div>
+                    ${description ? `<div class="mb-6"><h3 class="text-lg font-semibold text-white mb-2">Description</h3><p class="text-gray-400 text-sm leading-relaxed">${description}</p></div>` : ''}
+                    ${galleryImages.length > 0 ? `
+                        <div>
+                            <h3 class="text-lg font-semibold text-white mb-3"><i class="fa-solid fa-images text-gold-400 mr-2"></i>Gallery (${galleryImages.length} photos)</h3>
+                            <div class="gallery-grid">
+                                ${galleryImages.map((img, idx) => `
+                                    <div class="gallery-item" onclick="openLightbox(${idx})">
+                                        <img src="${img}" alt="Gallery ${idx + 1}" loading="lazy"
+                                             onerror="this.src='https://via.placeholder.com/300x300/0f172a/f59e0b?text=No+Image'">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('project-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function openLightbox(index) {
+            currentLightboxIndex = index;
+            document.getElementById('lightbox-img').src = currentGalleryImages[index];
+            document.getElementById('lightbox').classList.add('active');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        function changeLightboxImage(direction) {
+            currentLightboxIndex += direction;
+            if (currentLightboxIndex < 0) currentLightboxIndex = currentGalleryImages.length - 1;
+            else if (currentLightboxIndex >= currentGalleryImages.length) currentLightboxIndex = 0;
+            document.getElementById('lightbox-img').src = currentGalleryImages[currentLightboxIndex];
+        }
+
+        // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
-            // Remove Loader
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
             }, 1000);
-
             initCMS();
 
-            // Navbar Scroll Effect
             window.addEventListener('scroll', () => {
                 const nav = document.getElementById('navbar');
                 const progress = document.getElementById('progress-bar');
@@ -559,25 +594,21 @@
                     nav.classList.remove('py-2');
                     nav.classList.add('py-4');
                 }
-                
                 const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
                 const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
                 progress.style.width = (winScroll / height) * 100 + "%";
             });
 
-            // Mobile Menu
             document.getElementById('mobile-menu-btn').addEventListener('click', () => {
                 document.getElementById('mobile-menu').classList.toggle('hidden');
             });
 
-            // Project Filter & Search
             const filterProjects = () => {
                 const category = document.getElementById('category-filter').value;
                 const search = document.getElementById('project-search').value.toLowerCase();
-                
-                const filtered = appData.projects.filter(p => {
+                const filtered = (appData.projects || []).filter(p => {
                     const matchCat = category === 'All' || p.category === category;
-                    const matchSearch = p.project.toLowerCase().includes(search) || p.client.toLowerCase().includes(search) || p.location.toLowerCase().includes(search);
+                    const matchSearch = (p.project || '').toLowerCase().includes(search) || (p.client || '').toLowerCase().includes(search) || (p.location || '').toLowerCase().includes(search);
                     return matchCat && matchSearch;
                 });
                 renderProjects(filtered);
@@ -585,6 +616,22 @@
 
             document.getElementById('category-filter').addEventListener('change', filterProjects);
             document.getElementById('project-search').addEventListener('input', filterProjects);
+
+            // Close modal/lightbox on outside click
+            document.addEventListener('click', (e) => {
+                if (e.target.id === 'project-modal') closeModal();
+                if (e.target.id === 'lightbox') closeLightbox();
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { closeModal(); closeLightbox(); }
+                const lightbox = document.getElementById('lightbox');
+                if (lightbox.classList.contains('active')) {
+                    if (e.key === 'ArrowLeft') changeLightboxImage(-1);
+                    if (e.key === 'ArrowRight') changeLightboxImage(1);
+                }
+            });
 
             // Counter Animation
             const counters = document.querySelectorAll('.counter');
