@@ -108,6 +108,36 @@
             .lightbox-next { right: 2rem; }
         }
 
+        /* Service Card Styles */
+        .service-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: #f59e0b;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+        }
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .service-card:hover .service-icon {
+            background: rgba(245, 158, 11, 0.2);
+            transform: scale(1.1);
+        }
+        .service-icon i {
+            font-size: 2.5rem;
+            color: #fbbf24;
+        }
+
         /* Responsive Utilities */
         @media (max-width: 640px) {
             .hero-title { font-size: 2rem; line-height: 2.5rem; }
@@ -233,7 +263,9 @@
                 <h4 class="text-gold-400 font-semibold mb-2">LAYANAN KAMI</h4>
                 <h2 class="text-2xl sm:text-4xl font-bold text-white">Solusi End-to-End untuk Industri Anda</h2>
             </div>
-            <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+            <div id="services-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Services will be loaded here with proper icons -->
+            </div>
         </div>
     </section>
 
@@ -380,6 +412,16 @@
         <i class="fa-brands fa-whatsapp"></i>
     </a>
 
+    <!-- Service Detail Modal -->
+    <div id="service-modal" class="modal-overlay">
+        <div class="modal-content max-w-2xl">
+            <button class="modal-close" onclick="closeServiceModal()"><i class="fa-solid fa-times"></i></button>
+            <div id="service-modal-body" class="p-8">
+                <!-- Content will be injected here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Project Detail Modal -->
     <div id="project-modal" class="modal-overlay">
         <div class="modal-content">
@@ -409,12 +451,14 @@
         // ==========================================
         const dummyData = {
             services: [
-                { name: "Mechanical", icon: "fa-gears", desc: "Instalasi dan perawatan peralatan mekanik industri." },
-                { name: "Piping", icon: "fa-water", desc: "Fabrikasi dan instalasi sistem perpipaan tekanan tinggi." },
-                { name: "Civil", icon: "fa-building", desc: "Konstruksi sipil untuk fasilitas industri dan infrastruktur." },
-                { name: "Electrical", icon: "fa-bolt", desc: "Instalasi listrik, instrumentasi, dan sistem kontrol." }
+                { name: "Mechanical", icon: "fa-gears", desc: "Instalasi dan perawatan peralatan mekanik industri termasuk pompa, kompresor, turbin, dan sistem mekanikal lainnya dengan standar kualitas internasional." },
+                { name: "Piping", icon: "fa-water", desc: "Fabrikasi dan instalasi sistem perpipaan tekanan tinggi untuk industri oil & gas, petrokimia, dan pembangkit listrik dengan sertifikasi ASME dan AWS." },
+                { name: "Civil", icon: "fa-building", desc: "Konstruksi sipil untuk fasilitas industri termasuk pondasi peralatan, struktur baja, bangunan pendukung, dan infrastruktur pabrik." },
+                { name: "Electrical", icon: "fa-bolt", desc: "Instalasi listrik tegangan menengah dan rendah, sistem instrumentasi, kontrol panel, dan automation untuk industri manufaktur dan energi." },
+                { name: "Tank", icon: "fa-database", desc: "Konstruksi dan perawatan tangki penyimpanan untuk minyak, gas, dan bahan kimia dengan standar API 650 dan API 620." },
+                { name: "Fabrication", icon: "fa-industry", desc: "Fabrikasi struktur baja, pressure vessel, heat exchanger, dan komponen industri lainnya dengan welding certified dan NDT testing." }
             ],
-            categories: ["All", "Mechanical", "Piping", "Civil", "Electrical", "Tank"],
+            categories: ["All", "Mechanical", "Piping", "Civil", "Electrical", "Tank", "Fabrication"],
             projects: [
                 { year: "2025", client: "PT Pertamina", category: "Tank", project: "Tank Maintenance Balongan", location: "Indramayu", image: "https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&q=80", gallery: [], description: "Proyek pemeliharaan tangki penyimpanan dengan standar keselamatan tinggi." },
                 { year: "2024", client: "PLN", category: "Electrical", project: "GI 150kV Upgrade", location: "Bekasi", image: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&q=80", gallery: [], description: "Upgrade gardu induk untuk meningkatkan kapasitas distribusi listrik." }
@@ -468,17 +512,33 @@
         function renderServices() {
             const grid = document.getElementById('services-grid');
             const services = Array.isArray(appData.services) ? appData.services : dummyData.services;
-            grid.innerHTML = services.map((s, i) => `
-                <div class="glass p-6 sm:p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group cursor-pointer" 
+            
+            if (!services || services.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center text-gray-400">Loading services...</div>';
+                return;
+            }
+            
+            grid.innerHTML = services.map((s, i) => {
+                // Default icon if not specified
+                const icon = s.icon || 'fa-cog';
+                const name = s.name || 'Service';
+                const desc = s.desc || s.description || 'Click to learn more about this service.';
+                
+                return `
+                <div class="service-card glass p-8 rounded-xl text-center" 
                      data-aos="fade-up" data-aos-delay="${i * 100}"
-                     onclick="filterByService('${s.name}')">
-                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gold-400/10 rounded-lg flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-gold-400 transition">
-                        <i class="fa-solid ${s.icon} text-xl sm:text-2xl text-gold-400 group-hover:text-navy-900"></i>
+                     onclick="openServiceModal('${name}', '${icon}', '${desc.replace(/'/g, "\\'")}')">
+                    <div class="service-icon mx-auto">
+                        <i class="fa-solid ${icon}"></i>
                     </div>
-                    <h3 class="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-3">${s.name}</h3>
-                    <p class="text-gray-400 text-xs sm:text-sm">${s.desc}</p>
+                    <h3 class="text-xl font-bold text-white mb-3">${name}</h3>
+                    <p class="text-gray-400 text-sm mb-4 line-clamp-3">${desc}</p>
+                    <button class="px-4 py-2 bg-gold-500/20 text-gold-400 rounded-lg text-sm font-semibold hover:bg-gold-500 hover:text-navy-900 transition">
+                        Selengkapnya <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function renderCategories() {
@@ -554,7 +614,63 @@
         }
 
         // ==========================================
-        // MODAL & LIGHTBOX FUNCTIONS
+        // SERVICE MODAL FUNCTIONS
+        // ==========================================
+        function openServiceModal(name, icon, description) {
+            const modal = document.getElementById('service-modal');
+            const modalBody = document.getElementById('service-modal-body');
+            
+            // Icon mapping for better display
+            const iconClass = icon || 'fa-cog';
+            
+            modalBody.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="w-24 h-24 bg-gold-400/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid ${iconClass} text-5xl text-gold-400"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-2">${name}</h2>
+                    <div class="w-20 h-1 bg-gold-500 mx-auto"></div>
+                </div>
+                <div class="prose prose-invert max-w-none">
+                    <p class="text-gray-300 text-lg leading-relaxed mb-6">${description}</p>
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <div class="glass p-4 rounded-lg">
+                            <i class="fa-solid fa-check-circle text-gold-400 mb-2"></i>
+                            <p class="text-sm text-gray-400">Bergaransi & Tersertifikasi</p>
+                        </div>
+                        <div class="glass p-4 rounded-lg">
+                            <i class="fa-solid fa-shield-halved text-gold-400 mb-2"></i>
+                            <p class="text-sm text-gray-400">Standar HSE Ketat</p>
+                        </div>
+                        <div class="glass p-4 rounded-lg">
+                            <i class="fa-solid fa-clock text-gold-400 mb-2"></i>
+                            <p class="text-sm text-gray-400">Tepat Waktu</p>
+                        </div>
+                        <div class="glass p-4 rounded-lg">
+                            <i class="fa-solid fa-medal text-gold-400 mb-2"></i>
+                            <p class="text-sm text-gray-400">Kualitas Terbaik</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 text-center">
+                    <a href="#contact" onclick="closeServiceModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-gold-500 text-navy-900 font-bold rounded-lg hover:bg-gold-400 transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Konsultasi Gratis
+                    </a>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeServiceModal() {
+            document.getElementById('service-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // ==========================================
+        // PROJECT MODAL & LIGHTBOX FUNCTIONS
         // ==========================================
         function openProjectModal(index) {
             console.log('Opening modal for index:', index);
@@ -654,31 +770,6 @@
         }
 
         // ==========================================
-        // SERVICE FILTER FUNCTION
-        // ==========================================
-        function filterByService(serviceName) {
-            const categoryFilter = document.getElementById('category-filter');
-            if (categoryFilter) {
-                categoryFilter.value = serviceName;
-                filterProjects();
-            }
-        }
-
-        function filterProjects() {
-            const category = document.getElementById('category-filter').value;
-            const search = document.getElementById('project-search').value.toLowerCase();
-            
-            const filtered = appData.projects.filter(p => {
-                const matchCat = category === 'All' || p.category === category;
-                const matchSearch = (p.project || '').toLowerCase().includes(search) || 
-                                   (p.client || '').toLowerCase().includes(search) || 
-                                   (p.location || '').toLowerCase().includes(search);
-                return matchCat && matchSearch;
-            });
-            renderProjects(filtered);
-        }
-
-        // ==========================================
         // EVENT LISTENERS
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
@@ -714,18 +805,46 @@
             });
 
             // Project Filter & Search
-            document.getElementById('category-filter').addEventListener('change', filterProjects);
-            document.getElementById('project-search').addEventListener('input', filterProjects);
+            document.getElementById('category-filter').addEventListener('change', () => {
+                const category = document.getElementById('category-filter').value;
+                const search = document.getElementById('project-search').value.toLowerCase();
+                const filtered = appData.projects.filter(p => {
+                    const matchCat = category === 'All' || p.category === category;
+                    const matchSearch = (p.project || '').toLowerCase().includes(search) || 
+                                       (p.client || '').toLowerCase().includes(search) || 
+                                       (p.location || '').toLowerCase().includes(search);
+                    return matchCat && matchSearch;
+                });
+                renderProjects(filtered);
+            });
+            
+            document.getElementById('project-search').addEventListener('input', () => {
+                const category = document.getElementById('category-filter').value;
+                const search = document.getElementById('project-search').value.toLowerCase();
+                const filtered = appData.projects.filter(p => {
+                    const matchCat = category === 'All' || p.category === category;
+                    const matchSearch = (p.project || '').toLowerCase().includes(search) || 
+                                       (p.client || '').toLowerCase().includes(search) || 
+                                       (p.location || '').toLowerCase().includes(search);
+                    return matchCat && matchSearch;
+                });
+                renderProjects(filtered);
+            });
 
             // Close modal/lightbox on outside click
             document.addEventListener('click', (e) => {
                 if (e.target.id === 'project-modal') closeModal();
                 if (e.target.id === 'lightbox') closeLightbox();
+                if (e.target.id === 'service-modal') closeServiceModal();
             });
 
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') { closeModal(); closeLightbox(); }
+                if (e.key === 'Escape') { 
+                    closeModal(); 
+                    closeLightbox(); 
+                    closeServiceModal();
+                }
                 const lightbox = document.getElementById('lightbox');
                 if (lightbox.classList.contains('active')) {
                     if (e.key === 'ArrowLeft') changeLightboxImage(-1);
