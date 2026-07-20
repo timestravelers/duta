@@ -203,7 +203,7 @@
             <div class="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
                 <div data-aos="fade-right">
                     <div class="relative">
-                        <img src="https://lh3.googleusercontent.com/d/1bub2Ibzxy8a-NoxwnAOExjpaJtl57y_E" alt="About" class="rounded-2xl shadow-2xl border border-white/10 w-full">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80" alt="About" class="rounded-2xl shadow-2xl border border-white/10 w-full">
                         <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-gold-500/20 rounded-full blur-2xl"></div>
                     </div>
                 </div>
@@ -469,7 +469,9 @@
             const grid = document.getElementById('services-grid');
             const services = Array.isArray(appData.services) ? appData.services : dummyData.services;
             grid.innerHTML = services.map((s, i) => `
-                <div class="glass p-6 sm:p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group" data-aos="fade-up" data-aos-delay="${i * 100}">
+                <div class="glass p-6 sm:p-8 rounded-xl hover:border-gold-400/50 transition duration-300 group cursor-pointer" 
+                     data-aos="fade-up" data-aos-delay="${i * 100}"
+                     onclick="filterByService('${s.name}')">
                     <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gold-400/10 rounded-lg flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-gold-400 transition">
                         <i class="fa-solid ${s.icon} text-xl sm:text-2xl text-gold-400 group-hover:text-navy-900"></i>
                     </div>
@@ -652,6 +654,31 @@
         }
 
         // ==========================================
+        // SERVICE FILTER FUNCTION
+        // ==========================================
+        function filterByService(serviceName) {
+            const categoryFilter = document.getElementById('category-filter');
+            if (categoryFilter) {
+                categoryFilter.value = serviceName;
+                filterProjects();
+            }
+        }
+
+        function filterProjects() {
+            const category = document.getElementById('category-filter').value;
+            const search = document.getElementById('project-search').value.toLowerCase();
+            
+            const filtered = appData.projects.filter(p => {
+                const matchCat = category === 'All' || p.category === category;
+                const matchSearch = (p.project || '').toLowerCase().includes(search) || 
+                                   (p.client || '').toLowerCase().includes(search) || 
+                                   (p.location || '').toLowerCase().includes(search);
+                return matchCat && matchSearch;
+            });
+            renderProjects(filtered);
+        }
+
+        // ==========================================
         // EVENT LISTENERS
         // ==========================================
         document.addEventListener('DOMContentLoaded', () => {
@@ -687,20 +714,6 @@
             });
 
             // Project Filter & Search
-            const filterProjects = () => {
-                const category = document.getElementById('category-filter').value;
-                const search = document.getElementById('project-search').value.toLowerCase();
-                const projects = Array.isArray(appData.projects) ? appData.projects : [];
-                const filtered = projects.filter(p => {
-                    const matchCat = category === 'All' || p.category === category;
-                    const matchSearch = (p.project || '').toLowerCase().includes(search) || 
-                                       (p.client || '').toLowerCase().includes(search) || 
-                                       (p.location || '').toLowerCase().includes(search);
-                    return matchCat && matchSearch;
-                });
-                renderProjects(filtered);
-            };
-
             document.getElementById('category-filter').addEventListener('change', filterProjects);
             document.getElementById('project-search').addEventListener('input', filterProjects);
 
